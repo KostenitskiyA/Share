@@ -9,8 +9,8 @@
 
         <Version>0.0.1</Version>
         <Authors>KostenitskiyA</Authors>
-        <RepositoryUrl>https://github.com/KostenitskiyA/Redis</RepositoryUrl>
-        <PackageId>Share</PackageId>
+        <RepositoryUrl>https://github.com/KostenitskiyA/Share</RepositoryUrl>
+        <PackageId>CAM.Share</PackageId>
         <Title>CAM.Share</Title>
     </PropertyGroup>
 
