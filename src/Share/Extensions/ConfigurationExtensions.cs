@@ -5,20 +5,28 @@ namespace Share.Extensions;
 
 public static class ConfigurationExtensions
 {
-    public static T ConfigureOptions<T>(this IServiceCollection services, IConfiguration configuration) where T : class
-    {
-        var sectionName = typeof(T).Name;
-        var section = configuration.GetSection(sectionName);
+    public static T ConfigureOptions<T>(
+        this IServiceCollection services,
+        IConfiguration configuration)
+        where T : class
+        => services.ConfigureOptions<T>(typeof(T).Name, configuration);
 
-        if (!section.GetChildren().Any())
-            throw new Exception($"{sectionName} section is missing or empty");
+    public static T ConfigureOptions<T>(
+        this IServiceCollection services,
+        string optionsName,
+        IConfiguration configuration)
+        where T : class
+    {
+        var section = configuration.GetSection(typeof(T).Name);
+
+        if (!section.Exists() || !section.GetChildren().Any())
+            throw new InvalidOperationException($"{typeof(T).Name} section is missing or empty");
 
         var options = section.Get<T>();
-
         if (options is null)
-            throw new Exception($"{sectionName} options not found");
+            throw new InvalidOperationException($"{typeof(T).Name} options not found");
 
-        services.Configure<T>(section);
+        services.Configure<T>(optionsName, section);
 
         return options;
     }
