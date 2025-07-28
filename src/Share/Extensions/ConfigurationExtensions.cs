@@ -8,7 +8,7 @@ public static class ConfigurationExtensions
     public static T ConfigureOptions<T>(
         this IServiceCollection services,
         IConfiguration configuration,
-        string? name)
+        string? name = null)
         where T : class
     {
         var section = configuration.GetSection(typeof(T).Name);
