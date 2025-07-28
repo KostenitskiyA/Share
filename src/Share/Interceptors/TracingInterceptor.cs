@@ -5,9 +5,9 @@ using Share.Options;
 
 namespace Share.Interceptors;
 
-public class TracingInterceptor(IOptions<OpenTelemetryConfiguration> options) : IInterceptor
+public class TracingInterceptor(IOptionsMonitor<OpenTelemetryConfiguration> options) : IInterceptor
 {
-    private readonly ActivitySource ActivitySource = new(options.Value.ServiceName);
+    private readonly ActivitySource ActivitySource = new(options.CurrentValue.ServiceName);
 
     public void Intercept(IInvocation invocation)
     {
