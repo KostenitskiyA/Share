@@ -7,12 +7,10 @@ public static class ConfigurationExtensions
 {
     public static T ConfigureOptions<T>(
         this IServiceCollection services,
-        IConfiguration configuration,
+        IConfigurationSection section,
         string? name = null)
         where T : class
     {
-        var section = configuration.GetSection(typeof(T).Name);
-
         if (!section.Exists() || !section.GetChildren().Any())
             throw new InvalidOperationException($"{typeof(T).Name} section is missing or empty");
 
@@ -24,6 +22,19 @@ public static class ConfigurationExtensions
             services.Configure<T>(section);
         else
             services.Configure<T>(name, section);
+
+        return options;
+    }
+
+    public static T ConfigureOptions<T>(
+        this IServiceCollection services,
+        IConfiguration configuration,
+        string? name = null)
+        where T : class
+    {
+        var section = configuration.GetSection(typeof(T).Name);
+
+        var options = services.ConfigureOptions<T>(section, name);
 
         return options;
     }

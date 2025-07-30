@@ -9,7 +9,7 @@
         <Nullable>enable</Nullable>
 
         <PackageId>CAM.Share</PackageId>
-        <Version>0.0.7</Version>
+        <Version>0.0.8</Version>
         <Authors>KostenitskiyA</Authors>
         <RepositoryUrl>https://github.com/KostenitskiyA/Share</RepositoryUrl>
     </PropertyGroup>
@@ -21,6 +21,7 @@
         <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.7"/>
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.7"/>
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.7"/>
+        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.7" />
         <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.7"/>
         <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="9.0.7"/>
     </ItemGroup>

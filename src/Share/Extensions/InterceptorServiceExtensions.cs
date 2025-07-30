@@ -1,5 +1,6 @@
 ﻿using Castle.DynamicProxy;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace Share.Extensions;
 
@@ -60,6 +61,27 @@ public static class InterceptorServiceExtensions
             var interceptor = provider.GetRequiredService<TInterceptor>();
             return ProxyGenerator.CreateInterfaceProxyWithTarget<TInterface>(target, interceptor);
         });
+
+        return services;
+    }
+
+    public static IServiceCollection AddHostedService<TInterface, TImplementation, TInterceptor>(
+        this IServiceCollection services)
+        where TInterface : class, IHostedService
+        where TImplementation : class, TInterface
+        where TInterceptor : class, IInterceptor
+    {
+        services.AddSingleton<TInterceptor>();
+        services.AddSingleton<TImplementation>();
+
+        services.AddSingleton<TInterface>(provider =>
+        {
+            var target = provider.GetRequiredService<TImplementation>();
+            var interceptor = provider.GetRequiredService<TInterceptor>();
+            return ProxyGenerator.CreateInterfaceProxyWithTarget<TInterface>(target, interceptor);
+        });
+
+        services.AddSingleton<IHostedService>(provider => provider.GetRequiredService<TInterface>());
 
         return services;
     }
