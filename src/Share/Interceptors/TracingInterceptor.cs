@@ -12,6 +12,14 @@ public class TracingInterceptor(IOptionsMonitor<OpenTelemetryConfiguration> opti
     public void Intercept(IInvocation invocation)
     {
         using var activity = ActivitySource.StartActivity(invocation.Method.Name);
-        invocation.Proceed();
+
+        try {
+            invocation.Proceed();
+        }
+        catch (Exception ex) {
+            activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
+            activity?.AddException(ex);
+            throw;
+        }
     }
 }

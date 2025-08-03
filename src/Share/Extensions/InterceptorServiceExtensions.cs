@@ -65,23 +65,21 @@ public static class InterceptorServiceExtensions
         return services;
     }
 
-    public static IServiceCollection AddHostedService<TInterface, TImplementation, TInterceptor>(
+    public static IServiceCollection AddHostedService<TService, TInterceptor>(
         this IServiceCollection services)
-        where TInterface : class, IHostedService
-        where TImplementation : class, TInterface
+        where TService : class, IHostedService
         where TInterceptor : class, IInterceptor
     {
         services.AddSingleton<TInterceptor>();
-        services.AddSingleton<TImplementation>();
+        services.AddSingleton<TService>();
 
-        services.AddSingleton<TInterface>(provider =>
+        services.AddSingleton<IHostedService>(provider =>
         {
-            var target = provider.GetRequiredService<TImplementation>();
+            var target = provider.GetRequiredService<TService>();
             var interceptor = provider.GetRequiredService<TInterceptor>();
-            return ProxyGenerator.CreateInterfaceProxyWithTarget<TInterface>(target, interceptor);
-        });
 
-        services.AddSingleton<IHostedService>(provider => provider.GetRequiredService<TInterface>());
+            return ProxyGenerator.CreateClassProxyWithTarget(target, interceptor);
+        });
 
         return services;
     }
