@@ -29,18 +29,12 @@ public static class ConfigurationExtensions
         return options;
     }
 
-    public static T ConfigureOptions<T>(
-        this IServiceCollection services,
-        IConfigurationSection section,
-        string? name = null)
+    public static T GetOptions<T>(
+        this IConfiguration configuration)
         where T : class
     {
-        var options = section.GetOptions<T>();
-
-        if (string.IsNullOrEmpty(name))
-            services.Configure<T>(section);
-        else
-            services.Configure<T>(name, section);
+        var configurationSection = configuration.GetSection<T>();
+        var options = configurationSection.GetOptions<T>();
 
         return options;
     }
@@ -53,6 +47,22 @@ public static class ConfigurationExtensions
     {
         var section = configuration.GetSection<T>();
         var options = services.ConfigureOptions<T>(section, name);
+
+        return options;
+    }
+
+    public static T ConfigureOptions<T>(
+        this IServiceCollection services,
+        IConfigurationSection section,
+        string? name = null)
+        where T : class
+    {
+        var options = section.GetOptions<T>();
+
+        if (string.IsNullOrEmpty(name))
+            services.Configure<T>(section);
+        else
+            services.Configure<T>(name, section);
 
         return options;
     }
