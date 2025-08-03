@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using System.Reflection;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Share.Extensions;
@@ -41,18 +42,6 @@ public static class ConfigurationExtensions
 
     public static T ConfigureOptions<T>(
         this IServiceCollection services,
-        IConfiguration configuration,
-        string? name = null)
-        where T : class
-    {
-        var section = configuration.GetSection<T>();
-        var options = services.ConfigureOptions<T>(section, name);
-
-        return options;
-    }
-
-    public static T ConfigureOptions<T>(
-        this IServiceCollection services,
         IConfigurationSection section,
         string? name = null)
         where T : class
@@ -65,5 +54,47 @@ public static class ConfigurationExtensions
             services.Configure<T>(name, section);
 
         return options;
+    }
+
+    public static T ConfigureOptions<T>(
+        this IServiceCollection services,
+        T options,
+        string? name = null)
+        where T : class
+    {
+        if (options is null)
+            throw new InvalidOperationException($"{typeof(T).Name} options not found");
+
+        if (string.IsNullOrEmpty(name))
+            services.Configure<T>(target => CopyProperties(options, target));
+        else
+            services.Configure<T>(name, target => CopyProperties(options, target));
+
+        return options;
+    }
+
+    public static T ConfigureOptions<T>(
+        this IServiceCollection services,
+        IConfiguration configuration,
+        string? name = null)
+        where T : class
+    {
+        var section = configuration.GetSection<T>();
+        var options = services.ConfigureOptions<T>(section, name);
+
+        return options;
+    }
+
+    private static void CopyProperties<T>(T source, T target)
+    {
+        var properties = typeof(T)
+            .GetProperties(BindingFlags.Public | BindingFlags.Instance)
+            .Where(p => p is { CanRead: true, CanWrite: true });
+
+        foreach (var property in properties)
+        {
+            var value = property.GetValue(source);
+            property.SetValue(target, value);
+        }
     }
 }
