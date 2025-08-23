@@ -64,23 +64,4 @@ public static class InterceptorServiceExtensions
 
         return services;
     }
-
-    public static IServiceCollection AddHostedService<TService, TInterceptor>(
-        this IServiceCollection services)
-        where TService : class, IHostedService
-        where TInterceptor : class, IInterceptor
-    {
-        services.AddSingleton<TInterceptor>();
-        services.AddSingleton<TService>();
-
-        services.AddSingleton<IHostedService>(provider =>
-        {
-            var target = provider.GetRequiredService<TService>();
-            var interceptor = provider.GetRequiredService<TInterceptor>();
-
-            return ProxyGenerator.CreateClassProxyWithTarget(target, interceptor);
-        });
-
-        return services;
-    }
 }
